@@ -46,9 +46,18 @@ The issue has clear accpetance criteria.
 
 ### Steps to Reproduce
 
-1. [Step 1]
-2. [Step 2]
-3. [Observed result]
+1. Understood the issue: Gateway name + controller name exceeding 63 chars breaks child resources (per GEP-1762 naming conventions), but no condition signals this.
+2. Read the condition types in apis/v1/gateway_types.go:1120-1365 — confirmed no NameTooLong or similar condition exists.
+3. Read the GEP-1762 spec in geps/gep-1762/index.md:63-68 — confirmed the <NAME>-<GATEWAY CLASS> naming convention and label requirements.
+4. Checked tests/naming.go — found the pseudo-code placeholder you created documenting the gap.
+5. Checked tests/go.mod — it's a separate Go module that imports sigs.k8s.io/gateway-api/apis/v1, so I could write a real test leveraging the API types.
+6. Wrote tests/naming_test.go with three tests:
+- TestNoNameTooLongCondition — iterates all known GatewayConditionType constants, asserts none equals "NameTooLong"
+- TestNamePlusControllerExceeds63 — computes len(name) + len(controller) for realistic combos, logs which exceed 63
+- TestGeneratedResourceNameExceeds63 — models the GEP-1762 <NAME>-<GATEWAY CLASS> pattern, shows overflow
+7. Removed old tests/naming.go (didn't compile — no package declaration, bare :=)
+8. Ran go test -v -run ... — all three tests passed, reproducing the gap
+
 
 ### Reproduction Evidence
 
