@@ -61,9 +61,19 @@ The issue has clear accpetance criteria.
 
 ### Reproduction Evidence
 
-- **Commit showing reproduction:** [Link to commit in your fork]
-- **Screenshots/logs:** [If applicable]
-- **My findings:** [What you discovered during reproduction]
+- **Commit showing reproduction:** [[Link to commit in your fork]](https://github.com/arjunexplorer/gateway-api/commit/ad725c13abe8489b4dcfbc9f742ae907a7f58964)
+- **Screenshots/logs:**
+- === RUN   TestNoNameTooLongCondition
+--- PASS: TestNoNameTooLongCondition (0.00s)
+=== RUN   TestNamePlusControllerExceeds63
+    naming_test.go:85: WARNING: name "my-very-long-gateway-name-for-production-istio.io/gateway-controller" (len=68) exceeds 63 characters
+    naming_test.go:85: WARNING: name "my-very-long-gateway-name-for-production-traefik.io/gateway-controller" (len=70) exceeds 63 characters
+=== RUN   TestGeneratedResourceNameExceeds63
+    naming_test.go:117: OVERFLOW: "a-abcdefghij-abcdefghij-abcdefghij-abcdefghij-abcdefghij-abcdefghi" (len=66) exceeds limit by 3 characters
+--- PASS: TestGeneratedResourceNameExceeds63 (0.00s)
+PASS
+ok  	sigs.k8s.io/gateway-api/tests	0.174s
+- **My findings:** The Gateway API defines no NameTooLong condition type despite GEP-1762 requiring generated resource names of the form <NAME>-<GATEWAY CLASS>. Realistic gateway names combined with common controller names routinely exceed the 63-character Kubernetes resource name limit, meaning implementations silently truncate or fail to create child resources with no signal back to the user.
 
 ---
 
@@ -81,20 +91,14 @@ The issue has clear accpetance criteria.
 
 Using UMPIRE framework (adapted):
 
-**Understand:** [Restate the problem]
-
-**Match:** [What similar patterns/solutions exist in the codebase?]
-
-**Plan:** [Step-by-step implementation plan]
-1. [Modify file X to do Y]
-2. [Add function Z]
-3. [Update tests]
-
-**Implement:** [Link to your branch/commits as you work]
-
-**Review:** [Self-review checklist - does it follow the project's contribution guidelines?]
-
-**Evaluate:** [How will you verify it works?]
+Understand: No NameTooLong condition exists, so controllers that truncate/break child resources when len(gatewayName) + 1 + len(controllerName) > 63 have no way to signal the problem to users (GEP-1762).
+Match: Follow the existing condition pattern in apis/v1/gateway_types.go — e.g., GatewayConditionAccepted with its paired GatewayReasonAccepted constant, doc comment, and const block.
+Plan:
+1. Add GatewayConditionNameTooLong and GatewayReasonNameTooLong constants in apis/v1/gateway_types.go following the existing doc-comment style
+2. Update TestNoNameTooLongCondition in tests/naming_test.go to assert the condition does exist (flip from negative to positive test)
+Implement: https://github.com/arjunexplorer/gateway-api
+Review: Verify format matches existing conditions (doc comment, const block placement, naming convention GatewayCondition*/GatewayReason*).
+Evaluate: go test ./tests/ -run NameTooLong passes; confirm the condition is absent before the change and present after.
 
 ---
 
