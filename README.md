@@ -149,7 +149,7 @@ Implemented the core fix for issue #4464 by adding the `GatewayConditionNameTooL
   - `tests/naming_test.go` — Flipped negative test to positive test; added new condition to `knownConditionTypes`; removed unused `findConditionType` stub
   - `contribution.md` — Updated status, added Week 3 progress and code changes
 
-- **Key commits:** (pending — changes staged for commit)
+- **Key commits:** [(Commit Link)](https://github.com/arjunexplorer/gateway-api/commit/50889c6a)
 
 - **Approach decisions:**
   - Followed the existing condition pattern exactly (const block with doc comments listing possible reasons) to maintain consistency and improve reviewability.
