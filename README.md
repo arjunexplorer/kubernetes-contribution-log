@@ -3,7 +3,7 @@
 **Contribution Number:** 1 
 **Student:** Arjun Sharma
 **Issue:** https://github.com/kubernetes-sigs/gateway-api
-**Status:** [Phase III] [Complete]
+**Status:** [Phase IV] [Complete]
 
 ---
 
@@ -160,19 +160,35 @@ Implemented the core fix for issue #4464 by adding the `GatewayConditionNameTooL
 
 ## Pull Request
 
-**PR Link:** [GitHub PR URL when submitted]
+**PR Link:** https://github.com/kubernetes-sigs/gateway-api/pull/5035
 
-**PR Description:** [Draft or final PR description - much of the content above can be adapted]
+**Summary of Contribution:**
 
-**Maintainer Feedback:**
-- [Date]: [Summary of feedback received]
-- [Date]: [How you addressed it]
+Submitted a pull request to kubernetes-sigs/gateway-api that adds the `GatewayConditionNameTooLong` condition type and `GatewayReasonNameTooLong` reason constant to `apis/v1/gateway_types.go`. This lets Gateway API implementations report when a gateway name combined with the gateway class name exceeds the 63-character Kubernetes resource name limit, as required by GEP 1762. Also includes tests in `tests/naming_test.go` demonstrating naming overflow scenarios and verifying the new condition exists.
 
-**Status:** [Awaiting review / Iterating / Approved / Merged]
+**PR Description:**
+
+/kind feature — Adds `GatewayConditionNameTooLong` for GEP 1762 naming overflow. Fixes #4464. Includes release note and local test verification.
+
+**Feedback Received & Next Steps:**
+
+- **2026-06-30:** kubernetes-prow flagged an invalid commit message (`GEP-1762` parsed as issue `#1762`) and missing release-note block. Resolved by rewriting commit messages, adding a `release-note` block to the PR description, and rebasing to remove merge commits.
+- **2026-06-30:** EasyCLA reported unsigned CLA and commits from two GitHub identities (`@arjunexplorer` and `@arjunxplorer`). Resolved by signing the CNCF CLA and rewriting commit history under a single author email.
+- **Next steps:** Waiting for a kubernetes-sigs org member to run `/ok-to-test` to trigger CI, then for maintainer review (`/lgtm` and `/approve`).
+
+**Status:** Awaiting review
 
 ---
 
-## Learnings & Reflections`
+## Phase IV Complete
+
+1. **PR submitted** to the upstream repository: https://github.com/kubernetes-sigs/gateway-api/pull/5035
+2. **Contribution README updated** with PR link, contribution summary, feedback notes, and current status.
+3. **Phase IV Complete.**
+
+---
+
+## Learnings & Reflections
 
 ### Technical Skills Gained
 
